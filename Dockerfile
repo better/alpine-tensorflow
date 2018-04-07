@@ -53,7 +53,7 @@ RUN cd /tmp \
         | tar xzf -
 
 # Build Tensorflow
-RUN cd tensorflow-${TENSORFLOW_VERSION} \
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && : musl-libc does not have "secure_getenv" function \
     && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
@@ -71,19 +71,13 @@ RUN cd tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_OPENCL=0 \
         TF_NEED_CUDA=0 \
         TF_NEED_MPI=0 \
-        bash configure \
-    && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
-    && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
-    && : \
-    && : install python modules including TensorFlow \
-    && cd \
-    && cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64-alpine.whl
-
-# Clean up
-RUN apk del .build-deps \
-    && rm -f /usr/bin/bazel \
-    && rm -rf /tmp/* /root/.cache
+        bash configure
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+    && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+    && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl /root/alpine-tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir ./tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64-alpine.whl \
+RUN pip3 install --no-cache-dir /root/alpine-tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl \
     && python3 -c 'import tensorflow'
