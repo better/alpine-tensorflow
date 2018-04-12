@@ -1,7 +1,7 @@
 Alpine Tensorflow
 -----------------
 
-... because Tensorflow is a pain to install on Alpine. This is mostly based on [https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter](tatsushid/docker-alpine-py3-tensorflow-jupyter) with a few changes to make it work on Alpine 3.7 and Tensorflow 1.7.0
+... because Tensorflow is a pain to install on Alpine. This is mostly based on [https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter](https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter) with a few changes to make it work on Alpine 3.7 and Tensorflow 1.7.0
 
 How to install
 --------------
